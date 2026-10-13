@@ -1,11 +1,21 @@
 import { initMandala } from './experiments/mandala.js';
 import { initParticleSystem } from './experiments/particle-system.js';
 import { initNoisePattern } from './experiments/noise-pattern.js';
+import { initFlowField } from './experiments/flow-field.js';
+import { initAttractor } from './experiments/attractor.js';
+import { initLissajous } from './experiments/lissajous.js';
+import { initFractalTree } from './experiments/fractal-tree.js';
+import { initVoronoi } from './experiments/voronoi.js';
 
 const experiments = {
     mandala: initMandala,
     particles: initParticleSystem,
-    noise: initNoisePattern
+    noise: initNoisePattern,
+    flowField: initFlowField,
+    attractor: initAttractor,
+    lissajous: initLissajous,
+    fractalTree: initFractalTree,
+    voronoi: initVoronoi
 };
 
 let currentCleanup = null;

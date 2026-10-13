@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,17 +8,23 @@
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <div id="app">
         <aside id="sidebar">
             <h1>Generative Playground</h1>
-            
+
             <div class="control-group">
                 <label for="experimentSelector">Experimento</label>
                 <select id="experimentSelector">
                     <option value="mandala">Mandala</option>
                     <option value="particles">Sistema de Partículas</option>
                     <option value="noise">Padrão de Ruído</option>
+                    <option value="flowField">Flow Field</option>
+                    <option value="attractor">Atrator Caótico</option>
+                    <option value="lissajous">Curvas Lissajous</option>
+                    <option value="fractalTree">Árvore Fractal</option>
+                    <option value="voronoi">Malha Voronoi</option>
                 </select>
             </div>
 
@@ -36,4 +43,5 @@
 
     <script type="module" src="js/main.js"></script>
 </body>
+
 </html>
