@@ -1,47 +1,24 @@
-export function initLissajous(canvas, controlsContainer) {
-    const ctx = canvas.getContext('2d');
-    const params = { freqX: 3, freqY: 4, delta: Math.PI / 2, color: '#00ffff' };
-    let animationFrameId, time = 0;
-
-    canvas.width = canvas.parentElement.clientWidth - 40;
-    canvas.height = canvas.parentElement.clientHeight - 40;
-
-    controlsContainer.innerHTML = `
-        <div class="control-group"><label>Freq X: <span id="val-fx">${params.freqX}</span></label><input type="range" id="param-fx" min="1" max="10" step="1" value="${params.freqX}"></div>
-        <div class="control-group"><label>Freq Y: <span id="val-fy">${params.freqY}</span></label><input type="range" id="param-fy" min="1" max="10" step="1" value="${params.freqY}"></div>
-        <div class="control-group"><label>Cor</label><input type="color" id="param-color" value="${params.color}"></div>
-    `;
-
-    controlsContainer.addEventListener('input', (e) => {
-        if (e.target.id === 'param-fx') { params.freqX = parseInt(e.target.value); document.getElementById('val-fx').innerText = e.target.value; }
-        if (e.target.id === 'param-fy') { params.freqY = parseInt(e.target.value); document.getElementById('val-fy').innerText = e.target.value; }
-        if (e.target.id === 'param-color') { params.color = e.target.value; }
-    });
-
-    function draw() {
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-        const radius = Math.min(cx, cy) * 0.8;
-
-        time += 0.01;
-        ctx.strokeStyle = params.color;
+export default {
+    controls: [
+        { id: 'fx', label: 'Freq X', min: 1, max: 10, value: 3 },
+        { id: 'fy', label: 'Freq Y', min: 1, max: 10, value: 4 },
+        { id: 'delta', label: 'Fase', min: 0, max: 6.28, step: 0.05, value: 1.57 },
+        { id: 'speed', label: 'Velocidade', min: 0, max: 2, step: 0.1, value: 0.6 },
+        { id: 'color', type: 'color', label: 'Cor', value: '#00ffff' }
+    ],
+    setup(rt, p, s) { s.t ??= 0; },
+    frame({ ctx, w, h }, p, s, dt) {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, w, h);
+        s.t += p.speed * dt;
+        const cx = w / 2, cy = h / 2, R = Math.min(cx, cy) * 0.8, N = 1200, k = Math.PI * 2 / N;
+        ctx.strokeStyle = p.color;
         ctx.lineWidth = 2;
         ctx.beginPath();
-
-        for (let a = 0; a < Math.PI * 2; a += 0.01) {
-            let x = cx + radius * Math.sin(params.freqX * a + time + params.delta);
-            let y = cy + radius * Math.sin(params.freqY * a);
-            if (a === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
+        for (let i = 0; i <= N; i++) {
+            const a = i * k, x = cx + R * Math.sin(p.fx * a + s.t + p.delta), y = cy + R * Math.sin(p.fy * a);
+            i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
         }
         ctx.stroke();
-
-        animationFrameId = requestAnimationFrame(draw);
     }
-    draw();
-
-    return () => cancelAnimationFrame(animationFrameId);
-}
+};

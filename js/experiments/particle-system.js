@@ -1,131 +1,47 @@
-export function initParticleSystem(canvas, controlsContainer) {
-    const ctx = canvas.getContext('2d');
+export default {
+    controls: [
+        { id: 'count', label: 'Partículas', min: 50, max: 400, step: 10, value: 150, reset: true },
+        { id: 'speed', label: 'Velocidade', min: 0.5, max: 4, step: 0.5, value: 1.5 },
+        { id: 'dist', label: 'Distância de Conexão', min: 50, max: 200, step: 10, value: 100 },
+        { id: 'color', type: 'color', label: 'Cor', value: '#00ffcc' }
+    ],
+    setup({ w, h }, p, s) {
+        s.pts = Array.from({ length: p.count }, () => {
+            const a = Math.random() * Math.PI * 2;
+            return { x: Math.random() * w, y: Math.random() * h, dx: Math.cos(a), dy: Math.sin(a) };
+        });
+    },
+    frame({ ctx, w, h }, p, s, dt) {
+        const pts = s.pts, n = pts.length, v = p.speed * dt * 60, D2 = p.dist * p.dist;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, w, h);
 
-    const params = {
-        count: 150,
-        speed: 1.5,
-        connectionDistance: 100,
-        particleColor: '#00ffcc',
-        lineColor: 'rgba(0, 255, 204, 0.15)',
-        particleSize: 2
-    };
-
-    let animationFrameId;
-    let particles = [];
-
-    canvas.width = canvas.parentElement.clientWidth - 40;
-    canvas.height = canvas.parentElement.clientHeight - 40;
-
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.vx = (Math.random() - 0.5) * params.speed;
-            this.vy = (Math.random() - 0.5) * params.speed;
+        for (const q of pts) {
+            q.x += q.dx * v; q.y += q.dy * v;
+            if (q.x < 0 || q.x > w) q.dx *= -1;
+            if (q.y < 0 || q.y > h) q.dy *= -1;
         }
 
-        update() {
-            this.x += this.vx;
-            this.y += this.vy;
-
-            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-        }
-
-        draw() {
-            ctx.fillStyle = params.particleColor;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, params.particleSize, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
-    function initParticles() {
-        particles = [];
-        for (let i = 0; i < params.count; i++) {
-            particles.push(new Particle());
-        }
-    }
-
-    // 1. Controles na Sidebar
-    controlsContainer.innerHTML = `
-        <div class="control-group">
-            <label>Partículas: <span id="val-count">${params.count}</span></label>
-            <input type="range" id="param-count" min="50" max="400" step="10" value="${params.count}">
-        </div>
-        <div class="control-group">
-            <label>Velocidade: <span id="val-speed">${params.speed}</span></label>
-            <input type="range" id="param-speed" min="0.5" max="4" step="0.5" value="${params.speed}">
-        </div>
-        <div class="control-group">
-            <label>Distância de Conexão: <span id="val-dist">${params.connectionDistance}</span></label>
-            <input type="range" id="param-dist" min="50" max="200" step="10" value="${params.connectionDistance}">
-        </div>
-        <div class="control-group">
-            <label>Cor</label>
-            <input type="color" id="param-color" value="${params.particleColor}">
-        </div>
-    `;
-
-    // 2. Eventos
-    controlsContainer.addEventListener('input', (e) => {
-        const id = e.target.id;
-        const val = e.target.value;
-
-        if (id === 'param-count') {
-            params.count = parseInt(val);
-            document.getElementById('val-count').innerText = val;
-            initParticles();
-        } else if (id === 'param-speed') {
-            params.speed = parseFloat(val);
-            document.getElementById('val-speed').innerText = val;
-            particles.forEach(p => {
-                const angle = Math.atan2(p.vy, p.vx);
-                p.vx = Math.cos(angle) * params.speed;
-                p.vy = Math.sin(angle) * params.speed;
-            });
-        } else if (id === 'param-dist') {
-            params.connectionDistance = parseInt(val);
-            document.getElementById('val-dist').innerText = val;
-        } else if (id === 'param-color') {
-            params.particleColor = val;
-            params.lineColor = val + '26'; // adiciona opacidade hex (~15%)
-        }
-    });
-
-    initParticles();
-
-    // 3. Loop
-    function draw() {
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        for (let i = 0; i < particles.length; i++) {
-            particles[i].update();
-            particles[i].draw();
-
-            for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-
-                if (dist < params.connectionDistance) {
-                    ctx.strokeStyle = params.lineColor;
-                    ctx.lineWidth = 1;
-                    ctx.beginPath();
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.stroke();
+        // Linhas agrupadas em 3 níveis de opacidade -> 3 strokes em vez de milhares
+        const buckets = [new Path2D(), new Path2D(), new Path2D()];
+        for (let i = 0; i < n; i++) {
+            const a = pts[i];
+            for (let j = i + 1; j < n; j++) {
+                const b = pts[j], dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy; // sem sqrt
+                if (d2 < D2) {
+                    const path = buckets[Math.min(2, (3 * (1 - d2 / D2)) | 0)];
+                    path.moveTo(a.x, a.y); path.lineTo(b.x, b.y);
                 }
             }
         }
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = 1;
+        [0.08, 0.22, 0.45].forEach((alpha, k) => { ctx.globalAlpha = alpha; ctx.stroke(buckets[k]); });
+        ctx.globalAlpha = 1;
 
-        animationFrameId = requestAnimationFrame(draw);
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        for (const q of pts) { ctx.moveTo(q.x + 2, q.y); ctx.arc(q.x, q.y, 2, 0, Math.PI * 2); }
+        ctx.fill();
     }
-
-    draw();
-
-    return function cleanup() {
-        cancelAnimationFrame(animationFrameId);
-    };
-}
+};

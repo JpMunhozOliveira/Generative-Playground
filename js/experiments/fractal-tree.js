@@ -1,62 +1,32 @@
-export function initFractalTree(canvas, controlsContainer) {
-    const ctx = canvas.getContext('2d');
-    const params = { depth: 10, angle: 25, length: 120, color: '#00ffaa' };
-    let animationFrameId, wind = 0;
+// Antes: translate/save/restore + stroke por galho (até 4096 strokes/frame).
+// Agora: coordenadas explícitas e um stroke por nível de profundidade.
+export default {
+    controls: [
+        { id: 'depth', label: 'Profundidade', min: 4, max: 12, value: 10 },
+        { id: 'angle', label: 'Ângulo', min: 5, max: 60, value: 25 },
+        { id: 'wind', label: 'Vento', min: 0, max: 15, step: 0.5, value: 5 },
+        { id: 'color', type: 'color', label: 'Cor', value: '#00ffaa' }
+    ],
+    setup(rt, p, s) { s.w ??= 0; },
+    frame({ ctx, w, h }, p, s, dt) {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, w, h);
+        s.w += dt * 1.2;
+        const paths = Array.from({ length: p.depth + 1 }, () => new Path2D()), rad = Math.PI / 180;
+        (function branch(x, y, ang, len, d) {
+            if (!d) return;
+            const x2 = x + Math.sin(ang) * len, y2 = y - Math.cos(ang) * len;
+            paths[d].moveTo(x, y); paths[d].lineTo(x2, y2);
+            const r = (p.angle + Math.sin(s.w + d) * p.wind) * rad;
+            branch(x2, y2, ang + r, len * 0.67, d - 1);
+            branch(x2, y2, ang - r, len * 0.67, d - 1);
+        })(w / 2, h - 50, 0, h * 0.17, p.depth);
 
-    canvas.width = canvas.parentElement.clientWidth - 40;
-    canvas.height = canvas.parentElement.clientHeight - 40;
-
-    controlsContainer.innerHTML = `
-        <div class="control-group"><label>Profundidade: <span id="val-depth">${params.depth}</span></label><input type="range" id="param-depth" min="4" max="12" step="1" value="${params.depth}"></div>
-        <div class="control-group"><label>Ângulo: <span id="val-angle">${params.angle}</span>°</label><input type="range" id="param-angle" min="5" max="60" step="1" value="${params.angle}"></div>
-        <div class="control-group"><label>Cor</label><input type="color" id="param-color" value="${params.color}"></div>
-    `;
-
-    controlsContainer.addEventListener('input', (e) => {
-        if (e.target.id === 'param-depth') { params.depth = parseInt(e.target.value); document.getElementById('val-depth').innerText = e.target.value; }
-        if (e.target.id === 'param-angle') { params.angle = parseInt(e.target.value); document.getElementById('val-angle').innerText = e.target.value; }
-        if (e.target.id === 'param-color') { params.color = e.target.value; }
-    });
-
-    function branch(len, depth) {
-        if (depth === 0) return;
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(0, -len);
-        ctx.stroke();
-
-        ctx.translate(0, -len);
-
-        const rad = (params.angle + Math.sin(wind + depth) * 5) * Math.PI / 180;
-
-        ctx.save();
-        ctx.rotate(rad);
-        branch(len * 0.67, depth - 1);
-        ctx.restore();
-
-        ctx.save();
-        ctx.rotate(-rad);
-        branch(len * 0.67, depth - 1);
-        ctx.restore();
-
-        ctx.translate(0, len);
+        ctx.strokeStyle = p.color;
+        ctx.lineCap = 'round';
+        for (let d = p.depth; d > 0; d--) {
+            ctx.lineWidth = 0.5 + d * 0.25;
+            ctx.stroke(paths[d]);
+        }
     }
-
-    function draw() {
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        wind += 0.02;
-        ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height - 50);
-        ctx.strokeStyle = params.color;
-        ctx.lineWidth = 2;
-        branch(params.length, params.depth);
-        ctx.restore();
-
-        animationFrameId = requestAnimationFrame(draw);
-    }
-    draw();
-
-    return () => cancelAnimationFrame(animationFrameId);
-}
+};

@@ -1,0 +1,55 @@
+/* Adicionado depois de style.css */
+#viewport {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+#sidebar {
+  overflow-y: auto;
+}
+#controlsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.btn-row {
+  display: flex;
+  gap: 8px;
+}
+.btn-row button {
+  flex: 1;
+}
+#fps {
+  font-size: 0.7rem;
+  color: #555;
+  text-align: right;
+}
+.control-group output {
+  color: #00ffcc;
+}
+input[type="range"] {
+  accent-color: #00ffcc;
+  padding: 0;
+}
+input[type="color"] {
+  height: 38px;
+  padding: 2px;
+  cursor: pointer;
+}
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 2px solid #00ffcc;
+  outline-offset: 2px;
+}
+@media (max-width: 760px) {
+  #app {
+    flex-direction: column;
+  }
+  #sidebar {
+    width: 100%;
+    max-height: 42vh;
+    border-right: 0;
+    border-bottom: 1px solid #262626;
+  }
+}

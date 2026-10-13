@@ -7,6 +7,7 @@
     <title>Generative Playground</title>
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/extras.css">
 </head>
 
 <body>
@@ -14,9 +15,8 @@
         <aside id="sidebar">
             <div class="header-row">
                 <h1>Generative Playground</h1>
-                <button id="infoBtn" title="Sobre os experimentos">ℹ️</button>
+                <button id="infoBtn" title="Sobre os experimentos" aria-label="Sobre os experimentos">ℹ️</button>
             </div>
-
 
             <div class="control-group">
                 <label for="experimentSelector">Experimento</label>
@@ -32,11 +32,14 @@
                 </select>
             </div>
 
-            <!-- Injetado dinamicamente pelo main.js -->
             <div id="controlsPanel"></div>
 
             <div class="control-group export-group">
-                <button id="exportBtn">Exportar Imagem (PNG)</button>
+                <span id="fps"></span>
+                <div class="btn-row">
+                    <button id="pauseBtn" title="Atalho: Espaço">Pausar</button>
+                    <button id="exportBtn">Exportar PNG</button>
+                </div>
             </div>
         </aside>
 
@@ -44,11 +47,12 @@
             <canvas id="renderCanvas"></canvas>
         </main>
     </div>
-    <div id="infoModal" class="modal">
+
+    <div id="infoModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-content">
-            <span id="closeModal">&times;</span>
+            <span id="closeModal" role="button" aria-label="Fechar">&times;</span>
             <h2 id="modalTitle">Sobre o Experimento</h2>
-            <p id="modalDescription">Carregando...</p>
+            <p id="modalDescription"></p>
         </div>
     </div>
 

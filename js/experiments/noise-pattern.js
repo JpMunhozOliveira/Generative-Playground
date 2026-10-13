@@ -1,125 +1,61 @@
-export function initNoisePattern(canvas, controlsContainer) {
-    const ctx = canvas.getContext('2d');
-
-    const params = {
-        scale: 40,
-        complexity: 3,
-        speed: 0.02,
-        colorScheme: 'cyber' // 'cyber', 'fire', 'mono'
-    };
-
-    let animationFrameId;
-    let time = 0;
-
-    // Resolução menor para processamento rápido no canvas
-    const resolution = 8;
-    
-    canvas.width = canvas.parentElement.clientWidth - 40;
-    canvas.height = canvas.parentElement.clientHeight - 40;
-
-    const cols = Math.floor(canvas.width / resolution);
-    const rows = Math.floor(canvas.height / resolution);
-
-    // 1. Controles na Sidebar
-    controlsContainer.innerHTML = `
-        <div class="control-group">
-            <label>Escala: <span id="val-scale">${params.scale}</span></label>
-            <input type="range" id="param-scale" min="10" max="100" step="5" value="${params.scale}">
-        </div>
-        <div class="control-group">
-            <label>Complexidade: <span id="val-complexity">${params.complexity}</span></label>
-            <input type="range" id="param-complexity" min="1" max="6" step="1" value="${params.complexity}">
-        </div>
-        <div class="control-group">
-            <label>Velocidade: <span id="val-speed">${params.speed}</span></label>
-            <input type="range" id="param-speed" min="0.005" max="0.08" step="0.005" value="${params.speed}">
-        </div>
-        <div class="control-group">
-            <label>Paleta de Cores</label>
-            <select id="param-palette">
-                <option value="cyber">Cyberpunk (Cyan/Magenta)</option>
-                <option value="fire">Chama (Laranja/Vermelho)</option>
-                <option value="mono">Monocromático</option>
-            </select>
-        </div>
-    `;
-
-    // 2. Eventos
-    controlsContainer.addEventListener('input', (e) => {
-        const id = e.target.id;
-        const val = e.target.value;
-
-        if (id === 'param-scale') {
-            params.scale = parseInt(val);
-            document.getElementById('val-scale').innerText = val;
-        } else if (id === 'param-complexity') {
-            params.complexity = parseInt(val);
-            document.getElementById('val-complexity').innerText = val;
-        } else if (id === 'param-speed') {
-            params.speed = parseFloat(val);
-            document.getElementById('val-speed').innerText = val;
-        } else if (id === 'param-palette') {
-            params.colorScheme = val;
-        }
-    });
-
-    // Função pseudo-ruído baseada em interferência harmônica
-    function getNoise(x, y, t) {
-        let value = 0;
-        let frequency = 1;
-        let amplitude = 1;
-        let totalAmplitude = 0;
-
-        for (let i = 0; i < params.complexity; i++) {
-            value += Math.sin(x * frequency * 0.01 + t) * Math.cos(y * frequency * 0.01 - t) * amplitude;
-            totalAmplitude += amplitude;
-            amplitude *= 0.5;
-            frequency *= 2;
-        }
-
-        return (value / totalAmplitude + 1) / 2; // Normaliza entre 0 e 1
+// Mesmo campo harmônico, mas sem trigonometria por pixel:
+// sin(A+t)·cos(B−t) é expandido em termos que dependem só de coluna, só de linha e só do tempo.
+const makeLut = name => {
+    const lut = new Uint8ClampedArray(768);
+    for (let i = 0; i < 256; i++) {
+        const n = i / 255;
+        const [r, g, b] = name === 'cyber' ? [n * 255, (1 - n) * 200, 255]
+            : name === 'fire' ? [255, n * 150, (1 - n) * 50] : [n * 255, n * 255, n * 255];
+        lut.set([r, g, b], i * 3);
     }
+    return lut;
+};
 
-    // 3. Loop de Renderização
-    function draw() {
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        time += params.speed;
-
-        for (let i = 0; i < cols; i++) {
-            for (let j = 0; j < rows; j++) {
-                const x = i * resolution;
-                const y = j * resolution;
-                
-                const n = getNoise(x, y, time);
-                
-                // Mapeia cor com base na paleta escolhida
-                let r = 0, g = 0, b = 0;
-                if (params.colorScheme === 'cyber') {
-                    r = Math.floor(n * 255);
-                    g = Math.floor((1 - n) * 200);
-                    b = 255;
-                } else if (params.colorScheme === 'fire') {
-                    r = 255;
-                    g = Math.floor(n * 150);
-                    b = Math.floor((1 - n) * 50);
-                } else {
-                    const c = Math.floor(n * 255);
-                    r = c; g = c; b = c;
-                }
-
-                ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-                ctx.fillRect(x, y, resolution - 1, resolution - 1);
+export default {
+    controls: [
+        { id: 'scale', label: 'Escala', min: 10, max: 100, step: 5, value: 40, reset: true },
+        { id: 'complexity', label: 'Complexidade', min: 1, max: 6, value: 3, reset: true },
+        { id: 'cell', label: 'Tamanho da célula', min: 2, max: 16, step: 2, value: 6, reset: true },
+        { id: 'speed', label: 'Velocidade', min: 0.005, max: 0.08, step: 0.005, value: 0.02 },
+        { id: 'palette', type: 'select', label: 'Paleta de Cores', value: 'cyber',
+          options: [['cyber', 'Cyberpunk (Cyan/Magenta)'], ['fire', 'Chama (Laranja/Vermelho)'], ['mono', 'Monocromático']] }
+    ],
+    setup({ w, h }, p, s) {
+        const cw = Math.ceil(w / p.cell), ch = Math.ceil(h / p.cell), k = 0.4 / p.scale;
+        const tab = (n, f, fn) => Float32Array.from({ length: n }, (_, i) => fn(i * f));
+        Object.assign(s, { cw, ch, O: p.complexity, t: s.t ?? 0, amp: [], sx: [], cx: [], sy: [], cy: [], tot: 0 });
+        for (let o = 0; o < p.complexity; o++) {
+            const f = 2 ** o * k * p.cell, amp = 0.5 ** o;
+            s.amp.push(amp); s.tot += amp;
+            s.sx.push(tab(cw, f, Math.sin)); s.cx.push(tab(cw, f, Math.cos));
+            s.sy.push(tab(ch, f, Math.sin)); s.cy.push(tab(ch, f, Math.cos));
+        }
+        s.off ??= document.createElement('canvas');
+        s.off.width = cw; s.off.height = ch;
+        s.octx = s.off.getContext('2d');
+        s.img = s.octx.createImageData(cw, ch);
+    },
+    frame({ ctx }, p, s, dt) {
+        if (s.pal !== p.palette) { s.lut = makeLut(p.palette); s.pal = p.palette; }
+        s.t += p.speed * dt * 60;
+        const c = Math.cos(s.t), sn = Math.sin(s.t), c2 = c * c, cs = c * sn, s2 = sn * sn;
+        const { cw, ch, O, sx, cx, sy, cy, amp, tot, lut } = s, d = s.img.data;
+        const U = new Float32Array(O), V = new Float32Array(O);
+        let q = 0;
+        for (let j = 0; j < ch; j++) {
+            for (let o = 0; o < O; o++) {
+                const sb = sy[o][j], cb = cy[o][j];
+                U[o] = cb * c2 + sb * cs; V[o] = cb * cs + sb * s2;
+            }
+            for (let i = 0; i < cw; i++) {
+                let v = 0;
+                for (let o = 0; o < O; o++) v += amp[o] * (sx[o][i] * U[o] + cx[o][i] * V[o]);
+                const k = Math.max(0, Math.min(255, ((v / tot + 1) * 127.5) | 0)) * 3;
+                d[q++] = lut[k]; d[q++] = lut[k + 1]; d[q++] = lut[k + 2]; d[q++] = 255;
             }
         }
-
-        animationFrameId = requestAnimationFrame(draw);
+        s.octx.putImageData(s.img, 0, 0);
+        ctx.imageSmoothingEnabled = true;
+        ctx.drawImage(s.off, 0, 0, cw * p.cell, ch * p.cell);
     }
-
-    draw();
-
-    return function cleanup() {
-        cancelAnimationFrame(animationFrameId);
-    };
-}
+};
