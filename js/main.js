@@ -6,6 +6,7 @@ import { initAttractor } from './experiments/attractor.js';
 import { initLissajous } from './experiments/lissajous.js';
 import { initFractalTree } from './experiments/fractal-tree.js';
 import { initVoronoi } from './experiments/voronoi.js';
+import { experimentDescriptions } from './descriptions.js';
 
 const experiments = {
     mandala: initMandala,
@@ -27,7 +28,8 @@ function loadExperiment(name) {
     
     const canvas = document.getElementById('renderCanvas');
     const controlsContainer = document.getElementById('controlsPanel');
-    
+    controlsContainer.innerHTML = '';
+
     if (experiments[name]) {
         currentCleanup = experiments[name](canvas, controlsContainer);
     }
@@ -37,15 +39,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const selector = document.getElementById('experimentSelector');
     const exportBtn = document.getElementById('exportBtn');
     const canvas = document.getElementById('renderCanvas');
+    
+    // Modal elements
+    const infoBtn = document.getElementById('infoBtn');
+    const infoModal = document.getElementById('infoModal');
+    const closeModal = document.getElementById('closeModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDescription = document.getElementById('modalDescription');
 
     selector.addEventListener('change', (e) => loadExperiment(e.target.value));
     
-    // Exportação PNG
     exportBtn.addEventListener('click', () => {
         const link = document.createElement('a');
         link.download = `${selector.value}-${Date.now()}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
+    });
+
+    // Eventos do Modal
+    infoBtn.addEventListener('click', () => {
+        const currentExp = selector.value;
+        const info = experimentDescriptions[currentExp];
+        if (info) {
+            modalTitle.innerText = info.title;
+            modalDescription.innerText = info.desc;
+        }
+        infoModal.style.display = 'flex';
+    });
+
+    closeModal.addEventListener('click', () => {
+        infoModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === infoModal) {
+            infoModal.style.display = 'none';
+        }
     });
 
     loadExperiment(selector.value);

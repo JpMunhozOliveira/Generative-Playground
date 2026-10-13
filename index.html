@@ -12,7 +12,11 @@
 <body>
     <div id="app">
         <aside id="sidebar">
-            <h1>Generative Playground</h1>
+            <div class="header-row">
+                <h1>Generative Playground</h1>
+                <button id="infoBtn" title="Sobre os experimentos">ℹ️</button>
+            </div>
+
 
             <div class="control-group">
                 <label for="experimentSelector">Experimento</label>
@@ -39,6 +43,13 @@
         <main id="viewport">
             <canvas id="renderCanvas"></canvas>
         </main>
+    </div>
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal">&times;</span>
+            <h2 id="modalTitle">Sobre o Experimento</h2>
+            <p id="modalDescription">Carregando...</p>
+        </div>
     </div>
 
     <script type="module" src="js/main.js"></script>
