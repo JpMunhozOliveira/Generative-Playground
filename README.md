@@ -1,3 +1,4 @@
+[⬅ Back to my profile](https://github.com/JpMunhozOliveira)
 # Generative Playground
 
 An interactive playground for experimenting with generative art using JavaScript and the HTML Canvas API.
