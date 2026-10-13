@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generative Playground</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <aside id="sidebar">
+            <h1>Generative Playground</h1>
+            
+            <div class="control-group">
+                <label for="experimentSelector">Experimento</label>
+                <select id="experimentSelector">
+                    <option value="mandala">Mandala</option>
+                    <option value="particles">Sistema de Partículas</option>
+                    <option value="noise">Padrão de Ruído</option>
+                </select>
+            </div>
+
+            <!-- Injetado dinamicamente pelo main.js -->
+            <div id="controlsPanel"></div>
+
+            <div class="control-group export-group">
+                <button id="exportBtn">Exportar Imagem (PNG)</button>
+            </div>
+        </aside>
+
+        <main id="viewport">
+            <canvas id="renderCanvas"></canvas>
+        </main>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
