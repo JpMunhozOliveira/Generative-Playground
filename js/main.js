@@ -13,7 +13,8 @@ const loaders = {
     voronoi: () => import('./experiments/voronoi.js'),
     reactionDiffusion: () => import('./experiments/reaction-diffusion.js'),
     physarum: () => import('./experiments/physarum.js'),
-    fractal: () => import('./experiments/fractal.js')
+    fractal: () => import('./experiments/fractal.js'),
+    boids: () => import('./experiments/boids.js')
 };
 
 // URL no formato #experimento?param=valor&... (só os parâmetros alterados)

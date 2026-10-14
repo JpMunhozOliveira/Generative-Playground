@@ -42,5 +42,9 @@ export const experimentDescriptions = {
     fractal: {
         title: "Fractais de Julia e Mandelbrot",
         desc: "Itera z → z² + c e colore cada ponto pelo tempo que ele leva para escapar ao infinito. No modo Julia, c percorre um círculo e o conjunto se transforma continuamente. No modo Mandelbrot, a câmera mergulha num zoom infinito rumo a um ponto da fronteira, revelando detalhes autossemelhantes até o limite de precisão numérica."
+    },
+    boids: {
+        title: "Boids (Revoada)",
+        desc: "Modelo de Craig Reynolds (1986): cada pássaro só enxerga os vizinhos próximos e segue três regras — separação, alinhamento e coesão. O comportamento de bando surge sem nenhum líder. Uma grade espacial evita comparar todos os pares de pássaros."
     }
 };
