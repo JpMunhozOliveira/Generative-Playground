@@ -13,22 +13,29 @@ const loaders = {
     voronoi: () => import('./experiments/voronoi.js')
 };
 
+// URL no formato #experimento?param=valor&... (só os parâmetros alterados)
+const parseHash = () => {
+    const [name, qs = ''] = location.hash.slice(1).split('?');
+    return { name, params: Object.fromEntries(new URLSearchParams(qs)) };
+};
+const setHash = (name, query) => history.replaceState(null, '', '#' + name + (query ? '?' + query : ''));
+
 document.addEventListener('DOMContentLoaded', () => {
     const $ = id => document.getElementById(id);
-    const [selector, canvas, panel, fps, pauseBtn, exportBtn, modal] =
-        ['experimentSelector', 'renderCanvas', 'controlsPanel', 'fps', 'pauseBtn', 'exportBtn', 'infoModal'].map($);
+    const [selector, canvas, panel, fps, pauseBtn, randomBtn, exportBtn, linkBtn, modal] =
+        ['experimentSelector', 'renderCanvas', 'controlsPanel', 'fps', 'pauseBtn', 'randomBtn', 'exportBtn', 'linkBtn', 'infoModal'].map($);
 
     let current = null, token = 0;
 
-    async function load(name) {
+    async function load(name, initial = {}) {
         const my = ++token;
         current?.stop();
         current = null;
         const mod = await loaders[name]?.();
         if (!mod || my !== token) return; // ignora cargas obsoletas
-        current = run(mod.default, canvas, panel, fps);
+        current = run(mod.default, canvas, panel, fps, { initial, onChange: q => setHash(name, q) });
         pauseBtn.textContent = 'Pausar';
-        history.replaceState(null, '', '#' + name);
+        setHash(name, current.query());
     }
 
     function togglePause() {
@@ -39,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     selector.addEventListener('change', e => load(e.target.value));
     pauseBtn.addEventListener('click', togglePause);
+    randomBtn.addEventListener('click', () => current?.randomize());
 
     exportBtn.addEventListener('click', () => {
         canvas.toBlob(blob => {
@@ -48,6 +56,19 @@ document.addEventListener('DOMContentLoaded', () => {
             a.click();
             setTimeout(() => URL.revokeObjectURL(a.href), 1000);
         }, 'image/png');
+    });
+
+    let linkT = 0;
+    linkBtn.addEventListener('click', async () => {
+        if (current) setHash(selector.value, current.query()); // não espera o debounce
+        try {
+            await navigator.clipboard.writeText(location.href);
+            linkBtn.textContent = 'Copiado!';
+        } catch {
+            linkBtn.textContent = 'Falhou';
+        }
+        clearTimeout(linkT);
+        linkT = setTimeout(() => { linkBtn.textContent = 'Copiar link'; }, 1500);
     });
 
     const closeModal = () => { modal.style.display = 'none'; };
@@ -60,11 +81,18 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeModal();
-        else if (e.code === 'Space' && !/INPUT|SELECT|BUTTON/.test(e.target.tagName)) { e.preventDefault(); togglePause(); }
+        if (e.key === 'Escape') return closeModal();
+        if (/INPUT|SELECT|BUTTON/.test(e.target.tagName) || e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.code === 'Space') { e.preventDefault(); togglePause(); }
+        else if (e.key.toLowerCase() === 'r') current?.randomize();
     });
 
-    const initial = location.hash.slice(1);
-    if (loaders[initial]) selector.value = initial; // link direto para um experimento
-    load(selector.value);
+    // Link colado na mesma aba (replaceState não dispara hashchange, só navegação real)
+    function loadFromHash() {
+        const { name, params } = parseHash();
+        if (loaders[name]) selector.value = name; // link direto para um experimento
+        load(selector.value, name === selector.value ? params : {});
+    }
+    window.addEventListener('hashchange', loadFromHash);
+    loadFromHash();
 });

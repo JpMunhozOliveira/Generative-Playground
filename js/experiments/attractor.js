@@ -3,6 +3,22 @@ import { hexRgb } from '../core.js';
 // Atrator de Clifford: x' = sin(a·y) + c·cos(a·x), y' = sin(b·x) + d·cos(b·y).
 // É estático (só recalcula quando um parâmetro muda) e renderiza por densidade: conta quantas
 // vezes cada pixel físico é visitado e mapeia essa contagem em escala logarítmica para o alfa.
+
+// Fração de uma grade 40x40 visitada por uma amostra curta da órbita. Valores baixos indicam
+// que o sistema colapsou num ponto fixo ou num ciclo curto (tela quase vazia).
+function coverage({ a, b, c, d }) {
+    const G = 40, seen = new Uint8Array(G * G), sx = G / (2 * (1 + Math.abs(c))), sy = G / (2 * (1 + Math.abs(d)));
+    let x = 0.1, y = 0.1, hits = 0;
+    for (let i = 0; i < 5000; i++) {
+        const xn = Math.sin(a * y) + c * Math.cos(a * x);
+        y = Math.sin(b * x) + d * Math.cos(b * y);
+        x = xn;
+        const k = Math.min(G - 1, ((x + 1 + Math.abs(c)) * sx) | 0) + G * Math.min(G - 1, ((y + 1 + Math.abs(d)) * sy) | 0);
+        if (!seen[k]) { seen[k] = 1; hits++; }
+    }
+    return hits / (G * G);
+}
+
 export default {
     static: true,
     controls: [
@@ -10,9 +26,17 @@ export default {
         { id: 'b', label: 'Parâmetro B', min: -2, max: 2, step: 0.05, value: 1.6 },
         { id: 'c', label: 'Parâmetro C', min: -2, max: 2, step: 0.05, value: 1.0 },
         { id: 'd', label: 'Parâmetro D', min: -2, max: 2, step: 0.05, value: 0.7 },
-        { id: 'count', label: 'Iterações (mil)', min: 50, max: 1000, step: 50, value: 300 },
+        { id: 'count', label: 'Iterações (mil)', min: 50, max: 1000, step: 50, value: 300, random: false },
         { id: 'color', type: 'color', label: 'Cor', value: '#ff007f' }
     ],
+    // Sorteia coeficientes até encontrar um atrator que preencha bem a tela
+    randomize(p) {
+        const r = () => Math.round(Math.random() * 80 - 40) / 20; // [-2, 2] em passos de 0.05
+        for (let i = 0; i < 200; i++) {
+            Object.assign(p, { a: r(), b: r(), c: r(), d: r() });
+            if (coverage(p) > 0.12) return;
+        }
+    },
     frame({ ctx, canvas, w, h }, p, s) {
         const W = canvas.width, H = canvas.height; // resolução física, nítido em telas HiDPI
         if (!s.off || s.off.width !== W || s.off.height !== H) {

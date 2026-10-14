@@ -16,7 +16,7 @@ export default {
     controls: [
         { id: 'scale', label: 'Escala', min: 10, max: 100, step: 5, value: 40, reset: true },
         { id: 'complexity', label: 'Complexidade', min: 1, max: 6, value: 3, reset: true },
-        { id: 'cell', label: 'Tamanho da célula', min: 2, max: 16, step: 2, value: 6, reset: true },
+        { id: 'cell', label: 'Tamanho da célula', min: 2, max: 16, step: 2, value: 6, reset: true, random: false },
         { id: 'speed', label: 'Velocidade', min: 0.005, max: 0.08, step: 0.005, value: 0.02 },
         { id: 'palette', type: 'select', label: 'Paleta de Cores', value: 'cyber',
           options: [['cyber', 'Cyberpunk (Cyan/Magenta)'], ['fire', 'Chama (Laranja/Vermelho)'], ['mono', 'Monocromático']] }
