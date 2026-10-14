@@ -34,5 +34,9 @@ export const experimentDescriptions = {
     reactionDiffusion: {
         title: "Reação-Difusão (Gray-Scott)",
         desc: "Simula dois químicos que se espalham e reagem: V consome U para se replicar, U é reabastecido e V se decompõe. Ajustando só as taxas de alimentação e remoção surgem corais, labirintos e manchas que se dividem como células — o mesmo mecanismo que Alan Turing propôs para explicar padrões na pele de animais."
+    },
+    physarum: {
+        title: "Physarum (Bolor Limoso)",
+        desc: "Dezenas de milhares de agentes seguem regras simples: farejam o rastro à frente, viram na direção do mais forte, andam e deixam rastro. O rastro se espalha e evapora. Sem nenhum controle central surgem redes de transporte eficientes, como as do organismo real Physarum polycephalum."
     }
 };
