@@ -50,5 +50,9 @@ export const experimentDescriptions = {
     life: {
         title: "Autômatos Celulares",
         desc: "Uma grade de células vivas ou mortas evolui por regras locais de nascimento e sobrevivência. O Jogo da Vida de Conway (B3/S23) é Turing-completo; variações como HighLife, Dia e Noite e Labirinto produzem comportamentos bem diferentes. Quando o sistema estabiliza, novas áreas aleatórias são injetadas."
+    },
+    dla: {
+        title: "DLA — Agregação Limitada por Difusão",
+        desc: "Partículas vagam ao acaso até encostar na estrutura e grudar. As pontas expostas capturam mais partículas do que os vales entre elas, então os galhos se ramificam sozinhos — o mesmo processo que forma corais, raios, cristais de gelo e depósitos minerais. Cresce a partir de um ponto central ou de uma linha na base."
     }
 };

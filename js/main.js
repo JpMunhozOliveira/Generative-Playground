@@ -16,7 +16,8 @@ const EXPERIMENTS = {
     physarum: { name: 'Physarum', load: () => import('./experiments/physarum.js') },
     fractal: { name: 'Fractal Julia/Mandelbrot', load: () => import('./experiments/fractal.js') },
     boids: { name: 'Boids (Revoada)', load: () => import('./experiments/boids.js') },
-    life: { name: 'Jogo da Vida', load: () => import('./experiments/game-of-life.js') }
+    life: { name: 'Jogo da Vida', load: () => import('./experiments/game-of-life.js') },
+    dla: { name: 'DLA (Crescimento)', load: () => import('./experiments/dla.js') }
 };
 
 // URL no formato #experimento?param=valor&... (só os parâmetros alterados)
