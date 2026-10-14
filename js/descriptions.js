@@ -54,5 +54,9 @@ export const experimentDescriptions = {
     dla: {
         title: "DLA — Agregação Limitada por Difusão",
         desc: "Partículas vagam ao acaso até encostar na estrutura e grudar. As pontas expostas capturam mais partículas do que os vales entre elas, então os galhos se ramificam sozinhos — o mesmo processo que forma corais, raios, cristais de gelo e depósitos minerais. Cresce a partir de um ponto central ou de uma linha na base."
+    },
+    lSystem: {
+        title: "L-Systems (Gramáticas de Lindenmayer)",
+        desc: "Uma gramática reescreve cada símbolo de um texto a cada iteração; depois uma \"tartaruga\" lê o resultado — anda, gira e salva/restaura a posição para ramificar. Regras de uma linha geram plantas, arbustos e curvas fractais como Hilbert, Dragão, Koch, Sierpiński e Gosper, desenhadas aqui traço a traço."
     }
 };
