@@ -38,5 +38,9 @@ export const experimentDescriptions = {
     physarum: {
         title: "Physarum (Bolor Limoso)",
         desc: "Dezenas de milhares de agentes seguem regras simples: farejam o rastro à frente, viram na direção do mais forte, andam e deixam rastro. O rastro se espalha e evapora. Sem nenhum controle central surgem redes de transporte eficientes, como as do organismo real Physarum polycephalum."
+    },
+    fractal: {
+        title: "Fractais de Julia e Mandelbrot",
+        desc: "Itera z → z² + c e colore cada ponto pelo tempo que ele leva para escapar ao infinito. No modo Julia, c percorre um círculo e o conjunto se transforma continuamente. No modo Mandelbrot, a câmera mergulha num zoom infinito rumo a um ponto da fronteira, revelando detalhes autossemelhantes até o limite de precisão numérica."
     }
 };

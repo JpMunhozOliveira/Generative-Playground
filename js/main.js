@@ -12,7 +12,8 @@ const loaders = {
     fractalTree: () => import('./experiments/fractal-tree.js'),
     voronoi: () => import('./experiments/voronoi.js'),
     reactionDiffusion: () => import('./experiments/reaction-diffusion.js'),
-    physarum: () => import('./experiments/physarum.js')
+    physarum: () => import('./experiments/physarum.js'),
+    fractal: () => import('./experiments/fractal.js')
 };
 
 // URL no formato #experimento?param=valor&... (só os parâmetros alterados)
