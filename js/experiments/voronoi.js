@@ -15,7 +15,8 @@ function clip(poly, ax, ay, bx, by) {
     return out;
 }
 
-// Voronoi de verdade (antes era só uma rede de proximidade; o slider de pontos também não fazia nada).
+// Cada célula começa como o retângulo da tela e é recortada pelo semiplano de cada outro ponto.
+// O(n²) recortes por frame, simples e rápido o bastante para até ~80 pontos.
 export default {
     controls: [
         { id: 'count', label: 'Pontos', min: 10, max: 80, step: 5, value: 35, reset: true },

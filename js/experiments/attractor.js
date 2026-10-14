@@ -1,7 +1,8 @@
 import { hexRgb } from '../core.js';
 
-// Atrator de Clifford. Antes: 50.000 iterações + 50.000 rects A CADA FRAME, mesmo parado.
-// Agora: calcula só quando um parâmetro muda e renderiza por densidade (histograma + log).
+// Atrator de Clifford: x' = sin(a·y) + c·cos(a·x), y' = sin(b·x) + d·cos(b·y).
+// É estático (só recalcula quando um parâmetro muda) e renderiza por densidade: conta quantas
+// vezes cada pixel físico é visitado e mapeia essa contagem em escala logarítmica para o alfa.
 export default {
     static: true,
     controls: [

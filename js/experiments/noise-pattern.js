@@ -1,5 +1,6 @@
-// Mesmo campo harmônico, mas sem trigonometria por pixel:
-// sin(A+t)·cos(B−t) é expandido em termos que dependem só de coluna, só de linha e só do tempo.
+// Campo harmônico (soma de oitavas de sin(A+t)·cos(B−t)) sem trigonometria por pixel: o produto é
+// expandido em termos que dependem só da coluna, só da linha e só do tempo. Os dois primeiros
+// viram tabelas pré-calculadas no setup; por frame restam multiplicações e somas.
 const makeLut = name => {
     const lut = new Uint8ClampedArray(768);
     for (let i = 0; i < 256; i++) {

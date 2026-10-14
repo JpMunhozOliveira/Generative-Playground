@@ -1,5 +1,5 @@
-// Antes: translate/save/restore + stroke por galho (até 4096 strokes/frame).
-// Agora: coordenadas explícitas e um stroke por nível de profundidade.
+// As pontas dos galhos são calculadas explicitamente (sem translate/save/restore) e galhos da
+// mesma profundidade compartilham um Path2D: um stroke por nível em vez de um por galho.
 export default {
     controls: [
         { id: 'depth', label: 'Profundidade', min: 4, max: 12, value: 10 },
