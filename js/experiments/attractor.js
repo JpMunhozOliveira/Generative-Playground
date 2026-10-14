@@ -12,8 +12,8 @@ export default {
         { id: 'count', label: 'Iterações (mil)', min: 50, max: 1000, step: 50, value: 300 },
         { id: 'color', type: 'color', label: 'Cor', value: '#ff007f' }
     ],
-    frame({ ctx, w, h }, p, s) {
-        const W = Math.floor(w), H = Math.floor(h);
+    frame({ ctx, canvas, w, h }, p, s) {
+        const W = canvas.width, H = canvas.height; // resolução física, nítido em telas HiDPI
         if (!s.off || s.off.width !== W || s.off.height !== H) {
             s.off = Object.assign(document.createElement('canvas'), { width: W, height: H });
             s.octx = s.off.getContext('2d');
@@ -41,6 +41,6 @@ export default {
         s.octx.putImageData(s.img, 0, 0);
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, w, h);
-        ctx.drawImage(s.off, 0, 0);
+        ctx.drawImage(s.off, 0, 0, w, h);
     }
 };
