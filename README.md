@@ -40,11 +40,12 @@ Escolha um experimento e ajuste seus parâmetros para explorar diferentes result
 
 ## 🧰 Funcionalidades
 
+- **Galeria com miniaturas** — Escolha o experimento numa galeria; a miniatura sob o mouse ganha vida.
 - **Controles interativos** — Altere os parâmetros e veja o canvas atualizar em tempo real.
 - **Aleatorizar** — Sorteia uma nova combinação de parâmetros com um clique (ou tecla `R`), com transição animada até os novos valores.
 - **Links compartilháveis** — Os parâmetros ficam na URL; copie o link e qualquer pessoa abre exatamente a mesma configuração.
 - **Exportação em PNG** — Salve o canvas atual como imagem, na resolução nativa da tela.
-- **Atalhos de teclado** — `Espaço` pausa/continua, `R` aleatoriza, `Esc` fecha o modal.
+- **Atalhos de teclado** — `Espaço` pausa/continua, `R` aleatoriza, `G` abre a galeria, `Esc` fecha janelas.
 - **Direto no navegador** — Nenhuma instalação ou software adicional é necessário para usar a demo.
 
 ## 🛠️ Tecnologias
