@@ -3,11 +3,11 @@ export const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
 export const hexA = (h, a) => `rgba(${hexRgb(h)},${a})`;
 
 function controlHTML(c) {
-    const head = `<div class="control-group"><label>${c.label}`;
-    if (c.type === 'color') return `${head}</label><input type="color" data-id="${c.id}" value="${c.value}"></div>`;
-    if (c.type === 'select') return `${head}</label><select data-id="${c.id}">${c.options.map(([k, t]) =>
+    const id = `ctl-${c.id}`, head = `<div class="control-group"><label for="${id}">${c.label}`;
+    if (c.type === 'color') return `${head}</label><input type="color" id="${id}" data-id="${c.id}" value="${c.value}"></div>`;
+    if (c.type === 'select') return `${head}</label><select id="${id}" data-id="${c.id}">${c.options.map(([k, t]) =>
         `<option value="${k}"${k === c.value ? ' selected' : ''}>${t}</option>`).join('')}</select></div>`;
-    return `${head}: <output>${c.value}</output></label><input type="range" data-id="${c.id}" min="${c.min}" max="${c.max}" step="${c.step ?? 1}" value="${c.value}"></div>`;
+    return `${head}: <output>${c.value}</output></label><input type="range" id="${id}" data-id="${c.id}" min="${c.min}" max="${c.max}" step="${c.step ?? 1}" value="${c.value}"></div>`;
 }
 
 /**
