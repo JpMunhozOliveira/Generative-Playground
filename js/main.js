@@ -1,21 +1,22 @@
 import { run } from './core.js';
+import { createGallery } from './gallery.js';
 import { experimentDescriptions } from './descriptions.js';
 
-// Carregamento sob demanda: só baixa o código do experimento selecionado
-const loaders = {
-    mandala: () => import('./experiments/mandala.js'),
-    particles: () => import('./experiments/particle-system.js'),
-    noise: () => import('./experiments/noise-pattern.js'),
-    flowField: () => import('./experiments/flow-field.js'),
-    attractor: () => import('./experiments/attractor.js'),
-    lissajous: () => import('./experiments/lissajous.js'),
-    fractalTree: () => import('./experiments/fractal-tree.js'),
-    voronoi: () => import('./experiments/voronoi.js'),
-    reactionDiffusion: () => import('./experiments/reaction-diffusion.js'),
-    physarum: () => import('./experiments/physarum.js'),
-    fractal: () => import('./experiments/fractal.js'),
-    boids: () => import('./experiments/boids.js'),
-    life: () => import('./experiments/game-of-life.js')
+// Carregamento sob demanda: só baixa o código do experimento quando ele (ou a galeria) é aberto
+const EXPERIMENTS = {
+    mandala: { name: 'Mandala', load: () => import('./experiments/mandala.js') },
+    particles: { name: 'Sistema de Partículas', load: () => import('./experiments/particle-system.js') },
+    noise: { name: 'Padrão de Ruído', load: () => import('./experiments/noise-pattern.js') },
+    flowField: { name: 'Flow Field', load: () => import('./experiments/flow-field.js') },
+    attractor: { name: 'Atrator Caótico', load: () => import('./experiments/attractor.js') },
+    lissajous: { name: 'Curvas Lissajous', load: () => import('./experiments/lissajous.js') },
+    fractalTree: { name: 'Árvore Fractal', load: () => import('./experiments/fractal-tree.js') },
+    voronoi: { name: 'Diagrama de Voronoi', load: () => import('./experiments/voronoi.js') },
+    reactionDiffusion: { name: 'Reação-Difusão', load: () => import('./experiments/reaction-diffusion.js') },
+    physarum: { name: 'Physarum', load: () => import('./experiments/physarum.js') },
+    fractal: { name: 'Fractal Julia/Mandelbrot', load: () => import('./experiments/fractal.js') },
+    boids: { name: 'Boids (Revoada)', load: () => import('./experiments/boids.js') },
+    life: { name: 'Jogo da Vida', load: () => import('./experiments/game-of-life.js') }
 };
 
 // URL no formato #experimento?param=valor&... (só os parâmetros alterados)
@@ -27,16 +28,18 @@ const setHash = (name, query) => history.replaceState(null, '', '#' + name + (qu
 
 document.addEventListener('DOMContentLoaded', () => {
     const $ = id => document.getElementById(id);
-    const [selector, canvas, panel, fps, pauseBtn, randomBtn, exportBtn, linkBtn, modal] =
-        ['experimentSelector', 'renderCanvas', 'controlsPanel', 'fps', 'pauseBtn', 'randomBtn', 'exportBtn', 'linkBtn', 'infoModal'].map($);
+    const [canvas, panel, fps, pauseBtn, randomBtn, exportBtn, linkBtn, modal] =
+        ['renderCanvas', 'controlsPanel', 'fps', 'pauseBtn', 'randomBtn', 'exportBtn', 'linkBtn', 'infoModal'].map($);
 
-    let current = null, token = 0;
+    let current = null, currentKey = 'mandala', token = 0;
 
     async function load(name, initial = {}) {
         const my = ++token;
+        currentKey = name;
+        $('experimentName').textContent = EXPERIMENTS[name].name;
         current?.stop();
         current = null;
-        const mod = await loaders[name]?.();
+        const mod = await EXPERIMENTS[name].load();
         if (!mod || my !== token) return; // ignora cargas obsoletas
         current = run(mod.default, canvas, panel, fps, { initial, onChange: q => setHash(name, q) });
         pauseBtn.textContent = 'Pausar';
@@ -49,7 +52,25 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseBtn.textContent = current.rt.paused ? 'Continuar' : 'Pausar';
     }
 
-    selector.addEventListener('change', e => load(e.target.value));
+    const gallery = createGallery({
+        modal: $('galleryModal'), grid: $('galleryGrid'), experiments: EXPERIMENTS,
+        onPick: key => { closeGallery(); if (key !== currentKey) load(key); }
+    });
+    // O experimento principal congela enquanto a galeria está aberta (CPU livre para as miniaturas)
+    function openGallery() {
+        if (current) current.rt.frozen = true;
+        gallery.open(currentKey);
+    }
+    function closeGallery() {
+        if (!gallery.isOpen) return;
+        gallery.close();
+        if (current) current.rt.frozen = false;
+        $('experimentBtn').focus();
+    }
+    $('experimentBtn').addEventListener('click', openGallery);
+    $('closeGallery').addEventListener('click', closeGallery);
+    $('galleryModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeGallery(); });
+
     pauseBtn.addEventListener('click', togglePause);
     randomBtn.addEventListener('click', () => current?.randomize());
 
@@ -57,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.toBlob(blob => {
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `${selector.value}-${Date.now()}.png`;
+            a.download = `${currentKey}-${Date.now()}.png`;
             a.click();
             setTimeout(() => URL.revokeObjectURL(a.href), 1000);
         }, 'image/png');
@@ -65,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let linkT = 0;
     linkBtn.addEventListener('click', async () => {
-        if (current) setHash(selector.value, current.query()); // não espera o debounce
+        if (current) setHash(currentKey, current.query()); // não espera o debounce
         try {
             await navigator.clipboard.writeText(location.href);
             linkBtn.textContent = 'Copiado!';
@@ -78,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const closeModal = () => { modal.style.display = 'none'; };
     $('infoBtn').addEventListener('click', () => {
-        const info = experimentDescriptions[selector.value];
+        const info = experimentDescriptions[currentKey];
         if (info) { $('modalTitle').textContent = info.title; $('modalDescription').textContent = info.desc; }
         modal.style.display = 'flex';
     });
@@ -86,17 +107,23 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') return closeModal();
-        if (/INPUT|SELECT|BUTTON/.test(e.target.tagName) || e.ctrlKey || e.metaKey || e.altKey) return;
-        if (e.code === 'Space') { e.preventDefault(); togglePause(); }
-        else if (e.key.toLowerCase() === 'r') current?.randomize();
+        if (e.key === 'Escape') { closeModal(); closeGallery(); return; }
+        if (gallery.isOpen || /INPUT|SELECT/.test(e.target.tagName) || e.ctrlKey || e.metaKey || e.altKey) return;
+        const key = e.key.toLowerCase();
+        if (e.code === 'Space') {
+            if (e.target.tagName === 'BUTTON') return; // espaço já aciona o botão focado
+            e.preventDefault(); togglePause();
+        }
+        else if (key === 'r') current?.randomize();
+        else if (key === 'g') openGallery();
     });
 
     // Link colado na mesma aba (replaceState não dispara hashchange, só navegação real)
     function loadFromHash() {
         const { name, params } = parseHash();
-        if (loaders[name]) selector.value = name; // link direto para um experimento
-        load(selector.value, name === selector.value ? params : {});
+        closeGallery();
+        if (EXPERIMENTS[name]) load(name, params); // link direto para um experimento
+        else load(currentKey);
     }
     window.addEventListener('hashchange', loadFromHash);
     loadFromHash();

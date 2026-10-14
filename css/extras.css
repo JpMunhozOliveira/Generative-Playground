@@ -42,7 +42,81 @@ input:focus-visible {
   outline: 2px solid #00ffcc;
   outline-offset: 2px;
 }
+/* Botão do experimento atual + galeria */
+.experiment-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #222;
+  color: #fff;
+  border: 1px solid #333;
+  text-transform: none;
+  font-weight: normal;
+  font-family: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+}
+.experiment-btn:hover {
+  background: #2a2a2a;
+  border-color: #555;
+}
+.experiment-btn-icon {
+  color: #00ffcc;
+}
+.gallery-content {
+  max-width: 920px;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  background: #111;
+  color: #ccc;
+  border: 1px solid #2a2a2a;
+  text-transform: none;
+  font-weight: normal;
+  font-family: inherit;
+  text-align: left;
+}
+.tile:hover,
+.tile:focus-visible {
+  background: #1a1a1a;
+  border-color: #00ffcc;
+}
+.tile[aria-current="true"] {
+  border-color: #00ffcc;
+  color: #00ffcc;
+}
+.tile canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 8 / 5;
+  height: auto;
+  background: #000;
+  box-shadow: none;
+  border-radius: 2px;
+}
+.tile canvas:not(.ready) {
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  50% { background: #1c1c1c; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile canvas:not(.ready) { animation: none; }
+}
 @media (max-width: 760px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
   #app {
     flex-direction: column;
   }
