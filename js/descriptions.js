@@ -25,10 +25,10 @@ export const experimentDescriptions = {
     },
     fractalTree: {
         title: "Árvore Fractal",
-        desc: "Utiliza recursividade: um tronco se divide repetidamente em galhos menores em ângulos simétricos, simulando crescimento orgânico e reagiando a uma simulação de vento."
+        desc: "Utiliza recursividade: um tronco se divide repetidamente em galhos menores em ângulos simétricos, simulando crescimento orgânico e reagindo a uma simulação de vento."
     },
     voronoi: {
-        title: "Malha Voronoi / Delaunay",
-        desc: "Pontos em constante movimento dinâmico conectados por proximidade geométrica, criando polígonos e malhas estruturais que lembram texturas naturais ou asas de insetos."
+        title: "Diagrama de Voronoi",
+        desc: "Divide o plano em células: cada região contém todos os pontos mais próximos de uma semente do que de qualquer outra. As sementes se movem e as células se reorganizam em tempo real, formando padrões que lembram texturas naturais, como asas de insetos ou espuma."
     }
 };
