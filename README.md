@@ -32,11 +32,16 @@ Escolha um experimento e ajuste seus parâmetros para explorar diferentes result
 | **Curvas Lissajous** | Curvas intrincadas criadas a partir de movimentos periódicos. |
 | **Árvore Fractal** | Estruturas ramificadas inspiradas em geometria fractal, balançando ao vento. |
 | **Diagrama de Voronoi** | Células que se reorganizam em tempo real conforme as sementes se movem. |
+| **Reação-Difusão** | Simulação química de Gray-Scott que gera corais, labirintos e manchas que se dividem como células. |
+| **Physarum** | Dezenas de milhares de agentes que, seguindo rastros, formam redes como as de um bolor limoso. |
+| **Fractal Julia/Mandelbrot** | Conjunto de Julia em transformação contínua ou zoom infinito no Mandelbrot. |
+| **Boids (Revoada)** | Comportamento de bando emergente a partir de separação, alinhamento e coesão. |
+| **Jogo da Vida** | Autômatos celulares (Conway, HighLife, Dia e Noite, Labirinto) com rastro das células. |
 
 ## 🧰 Funcionalidades
 
 - **Controles interativos** — Altere os parâmetros e veja o canvas atualizar em tempo real.
-- **Aleatorizar** — Sorteia uma nova combinação de parâmetros com um clique (ou tecla `R`).
+- **Aleatorizar** — Sorteia uma nova combinação de parâmetros com um clique (ou tecla `R`), com transição animada até os novos valores.
 - **Links compartilháveis** — Os parâmetros ficam na URL; copie o link e qualquer pessoa abre exatamente a mesma configuração.
 - **Exportação em PNG** — Salve o canvas atual como imagem, na resolução nativa da tela.
 - **Atalhos de teclado** — `Espaço` pausa/continua, `R` aleatoriza, `Esc` fecha o modal.
