@@ -30,5 +30,9 @@ export const experimentDescriptions = {
     voronoi: {
         title: "Diagrama de Voronoi",
         desc: "Divide o plano em células: cada região contém todos os pontos mais próximos de uma semente do que de qualquer outra. As sementes se movem e as células se reorganizam em tempo real, formando padrões que lembram texturas naturais, como asas de insetos ou espuma."
+    },
+    reactionDiffusion: {
+        title: "Reação-Difusão (Gray-Scott)",
+        desc: "Simula dois químicos que se espalham e reagem: V consome U para se replicar, U é reabastecido e V se decompõe. Ajustando só as taxas de alimentação e remoção surgem corais, labirintos e manchas que se dividem como células — o mesmo mecanismo que Alan Turing propôs para explicar padrões na pele de animais."
     }
 };
