@@ -46,5 +46,9 @@ export const experimentDescriptions = {
     boids: {
         title: "Boids (Revoada)",
         desc: "Modelo de Craig Reynolds (1986): cada pássaro só enxerga os vizinhos próximos e segue três regras — separação, alinhamento e coesão. O comportamento de bando surge sem nenhum líder. Uma grade espacial evita comparar todos os pares de pássaros."
+    },
+    life: {
+        title: "Autômatos Celulares",
+        desc: "Uma grade de células vivas ou mortas evolui por regras locais de nascimento e sobrevivência. O Jogo da Vida de Conway (B3/S23) é Turing-completo; variações como HighLife, Dia e Noite e Labirinto produzem comportamentos bem diferentes. Quando o sistema estabiliza, novas áreas aleatórias são injetadas."
     }
 };

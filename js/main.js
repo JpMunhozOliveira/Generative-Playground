@@ -14,7 +14,8 @@ const loaders = {
     reactionDiffusion: () => import('./experiments/reaction-diffusion.js'),
     physarum: () => import('./experiments/physarum.js'),
     fractal: () => import('./experiments/fractal.js'),
-    boids: () => import('./experiments/boids.js')
+    boids: () => import('./experiments/boids.js'),
+    life: () => import('./experiments/game-of-life.js')
 };
 
 // URL no formato #experimento?param=valor&... (só os parâmetros alterados)
