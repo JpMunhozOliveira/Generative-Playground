@@ -37,6 +37,8 @@ Escolha um experimento e ajuste seus parâmetros para explorar diferentes result
 | **Fractal Julia/Mandelbrot** | Conjunto de Julia em transformação contínua ou zoom infinito no Mandelbrot. |
 | **Boids (Revoada)** | Comportamento de bando emergente a partir de separação, alinhamento e coesão. |
 | **Jogo da Vida** | Autômatos celulares (Conway, HighLife, Dia e Noite, Labirinto) com rastro das células. |
+| **DLA (Crescimento)** | Partículas em passeio aleatório que grudam e formam estruturas ramificadas, como corais e raios. |
+| **L-System** | Gramáticas que geram plantas e curvas fractais (Hilbert, Dragão, Koch, Sierpiński, Gosper), desenhadas traço a traço. |
 
 ## 🧰 Funcionalidades
 
