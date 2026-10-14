@@ -24,6 +24,7 @@ function seed(s) {
 }
 
 export default {
+    thumb: { params: { cell: 2 }, warmup: 180 }, // miniatura da galeria
     controls: [
         { id: 'preset', type: 'select', label: 'Padrão', value: 'coral', options: [['coral', 'Coral'], ['mitose', 'Mitose'],
             ['labirinto', 'Labirinto'], ['pontos', 'Pontos'], ['vermes', 'Vermes'], ['ondas', 'Ondas']] },

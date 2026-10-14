@@ -2,6 +2,7 @@
 // separação (não colidir), alinhamento (voar na direção média) e coesão (ir para o centro do grupo).
 // Vizinhos são buscados numa grade espacial (lista ligada por célula) em vez de testar todos os pares.
 export default {
+    thumb: { params: { count: 80, vision: 30 }, warmup: 120 }, // miniatura da galeria
     controls: [
         { id: 'count', label: 'Pássaros', min: 50, max: 1000, step: 50, value: 400, reset: true },
         { id: 'vision', label: 'Raio de visão', min: 20, max: 100, step: 5, value: 50 },

@@ -18,6 +18,7 @@ function clip(poly, ax, ay, bx, by) {
 // Cada célula começa como o retângulo da tela e é recortada pelo semiplano de cada outro ponto.
 // O(n²) recortes por frame, simples e rápido o bastante para até ~80 pontos.
 export default {
+    thumb: { params: { count: 15 } }, // miniatura da galeria
     controls: [
         { id: 'count', label: 'Pontos', min: 10, max: 80, step: 5, value: 35, reset: true },
         { id: 'speed', label: 'Velocidade', min: 0, max: 3, step: 0.1, value: 0.6 },

@@ -1,4 +1,5 @@
 export default {
+    thumb: { params: { count: 40, dist: 45 } }, // miniatura da galeria
     controls: [
         { id: 'count', label: 'Partículas', min: 50, max: 400, step: 10, value: 150, reset: true },
         { id: 'speed', label: 'Velocidade', min: 0.5, max: 4, step: 0.5, value: 1.5 },

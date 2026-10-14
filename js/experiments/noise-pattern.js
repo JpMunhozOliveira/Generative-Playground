@@ -13,6 +13,7 @@ const makeLut = name => {
 };
 
 export default {
+    thumb: { params: { cell: 4 } }, // miniatura da galeria
     controls: [
         { id: 'scale', label: 'Escala', min: 10, max: 100, step: 5, value: 40, reset: true },
         { id: 'complexity', label: 'Complexidade', min: 1, max: 6, value: 3, reset: true },

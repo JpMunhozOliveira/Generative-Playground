@@ -28,6 +28,7 @@ function makeLut([A, B, C, D]) {
 }
 
 export default {
+    thumb: { params: { cell: 1 } }, // miniatura da galeria
     controls: [
         { id: 'mode', type: 'select', label: 'Conjunto', value: 'julia',
           options: [['julia', 'Julia (animado)'], ['mandelbrot', 'Mandelbrot (zoom infinito)']] },

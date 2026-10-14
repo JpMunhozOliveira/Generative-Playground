@@ -18,6 +18,7 @@ function sprinkle(s, density, size) {
 }
 
 export default {
+    thumb: { params: { cell: 3 }, warmup: 200 }, // miniatura da galeria
     controls: [
         { id: 'rule', type: 'select', label: 'Regra', value: 'conway', options: [['conway', 'Conway (B3/S23)'],
             ['highlife', 'HighLife (B36/S23)'], ['daynight', 'Dia e Noite (B3678/S34678)'], ['maze', 'Labirinto (B3/S12345)']] },

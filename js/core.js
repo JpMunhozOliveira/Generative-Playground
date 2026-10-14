@@ -62,7 +62,7 @@ function controlHTML(c, value) {
 
 /**
  * Executa um experimento { controls, static?, setup?(rt,p,s), frame(rt,p,s,dt), randomize?(p) }.
- * rt = { canvas, ctx, w, h, dpr, paused, dirty } (w/h em px CSS), p = parâmetros, s = estado do experimento.
+ * rt = { canvas, ctx, w, h, dpr, paused, frozen, dirty } (w/h em px CSS; frozen suspende o loop), p = parâmetros, s = estado do experimento.
  * Controles com `random: false` ficam de fora do Aleatorizar. Ao aleatorizar, sliders e cores deslizam até o
  * novo valor (sliders de passo inteiro avançam de passo em passo); selects e controles `reset` mudam na hora.
  * opts.initial = valores iniciais (strings, ex. vindos da URL); opts.onChange(query) recebe os parâmetros
@@ -71,7 +71,7 @@ function controlHTML(c, value) {
 export function run(exp, canvas, panel, fpsEl, { initial = {}, onChange } = {}) {
     const ac = new AbortController();
     const ctx = canvas.getContext('2d');
-    const rt = { canvas, ctx, w: 0, h: 0, dpr: 0, paused: false, dirty: true };
+    const rt = { canvas, ctx, w: 0, h: 0, dpr: 0, paused: false, frozen: false, dirty: true };
     const p = {}, s = {}, byId = {};
     for (const c of exp.controls) { byId[c.id] = c; p[c.id] = coerce(c, initial[c.id]) ?? c.value; }
     panel.innerHTML = exp.controls.map(c => controlHTML(c, p[c.id])).join('');
@@ -160,6 +160,7 @@ export function run(exp, canvas, panel, fpsEl, { initial = {}, onChange } = {}) 
     let raf, last = performance.now(), fpsT = last, frames = 0;
     const tick = now => {
         raf = requestAnimationFrame(tick);
+        if (rt.frozen) { last = now; return; }
         const dt = Math.min((now - last) / 1000, 0.05); // independente da taxa de atualização
         last = now;
         if (++frames && now - fpsT >= 500) {
@@ -176,5 +177,43 @@ export function run(exp, canvas, panel, fpsEl, { initial = {}, onChange } = {}) 
     return {
         rt, randomize, query,
         stop() { ac.abort(); clearTimeout(notifyT); cancelAnimationFrame(raf); cancelAnimationFrame(pending); ro.disconnect(); }
+    };
+}
+
+/**
+ * Miniatura de um experimento: tamanho fixo, sem painel, parâmetros padrão sobrescritos por
+ * exp.thumb.params (ex.: menos agentes). warmup() simula os quadros iniciais (exp.thumb.warmup) para gerar
+ * o instantâneo estático; play()/stop() animam ao vivo (usado só na miniatura sob o mouse).
+ */
+export function preview(exp, canvas, w, h) {
+    const dpr = Math.min(2, window.devicePixelRatio || 1), ctx = canvas.getContext('2d');
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const rt = { canvas, ctx, w, h, dpr, paused: false, frozen: false, dirty: true }, s = {};
+    const p = { ...Object.fromEntries(exp.controls.map(c => [c.id, c.value])), ...exp.thumb?.params };
+    exp.setup?.(rt, p, s);
+    let raf = 0;
+    return {
+        // Em fatias de ~8 ms, cedendo ao navegador entre elas: simulações longas não travam a interface
+        async warmup() {
+            let n = exp.static ? 1 : exp.thumb?.warmup ?? 60;
+            while (n > 0) {
+                const t0 = performance.now();
+                while (n > 0 && performance.now() - t0 < 8) { exp.frame(rt, p, s, 1 / 60); n--; }
+                if (n > 0) await new Promise(r => setTimeout(r));
+            }
+        },
+        play() {
+            if (exp.static || raf) return;
+            let last = performance.now();
+            const tick = now => {
+                raf = requestAnimationFrame(tick);
+                exp.frame(rt, p, s, Math.min((now - last) / 1000, 0.05));
+                last = now;
+            };
+            raf = requestAnimationFrame(tick);
+        },
+        stop() { cancelAnimationFrame(raf); raf = 0; }
     };
 }

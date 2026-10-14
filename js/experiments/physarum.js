@@ -6,6 +6,7 @@ import { hexRgb, pixelBuffer } from '../core.js';
 const SCALE = 2; // 1 célula do mapa = 2x2 px CSS
 
 export default {
+    thumb: { params: { count: 5, sensorDist: 5 }, warmup: 200 }, // miniatura da galeria
     controls: [
         { id: 'count', label: 'Agentes (mil)', min: 5, max: 80, step: 5, value: 30, reset: true, random: false },
         { id: 'sensorAngle', label: 'Ângulo do sensor', min: 5, max: 90, value: 30 },

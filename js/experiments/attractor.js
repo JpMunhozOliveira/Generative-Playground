@@ -21,6 +21,7 @@ function coverage({ a, b, c, d }) {
 
 export default {
     static: true,
+    thumb: { params: { count: 150 } }, // miniatura da galeria
     controls: [
         { id: 'a', label: 'Parâmetro A', min: -2, max: 2, step: 0.05, value: -1.4 },
         { id: 'b', label: 'Parâmetro B', min: -2, max: 2, step: 0.05, value: 1.6 },
